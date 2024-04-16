@@ -1,313 +1,150 @@
-/*
-===================================
-          Table Content
-===================================
-1.  responsive menu slideing
-2.  code for mobile menu 
-3.  menu options custom affix
-4.  isotope
-5.  skill circle progress bar
-6.  progress bar
-7.  Swiper Slider
-    - portfolio-slider
-    - testimonial slider
-    - blog slider
-    - blog slider for home-page-two
-    - post-img-slider
-    - more-case-slider
-    - test-slider
-    -
-8. Scroll to top
-*/
-
-
-(function($) {
-    "use strict";
-
-    // responsive menu slideing
-    if ($(window).width() < 992) {
-        $(".navbar-collapse>ul>li>a, .navbar-collapse ul.sub-menu>li>a").on("click", function() {
-            var element = $(this).parent("li");
-            if (element.hasClass("open")) {
-                element.removeClass("open");
-                element.find("li").removeClass("open");
-                element.find("ul").slideUp(500, "linear");
-            } else {
-                element.addClass("open");
-                element.children("ul").slideDown();
-                element.siblings("li").children("ul").slideUp();
-                element.siblings("li").removeClass("open");
-                element.siblings("li").find("li").removeClass("open");
-                element.siblings("li").find("ul").slideUp();
-            }
+// Responsive menu sliding
+document.addEventListener('DOMContentLoaded', function() {
+    if (window.innerWidth < 992) {
+        document.querySelectorAll('.navbar-collapse > ul > li > a, .navbar-collapse ul.sub-menu > li > a').forEach(function(element) {
+            element.addEventListener('click', function() {
+                var parentLi = this.parentNode;
+                if (parentLi.classList.contains('open')) {
+                    parentLi.classList.remove('open');
+                    parentLi.querySelectorAll('li').forEach(function(li) {
+                        li.classList.remove('open');
+                    });
+                    parentLi.querySelectorAll('ul').forEach(function(ul) {
+                        ul.style.display = 'none';
+                    });
+                } else {
+                    parentLi.classList.add('open');
+                    parentLi.children('ul').style.display = 'block';
+                    parentLi.siblings('li').children('ul').style.display = 'none';
+                    parentLi.siblings('li').classList.remove('open');
+                    parentLi.siblings('li').querySelectorAll('li').forEach(function(li) {
+                        li.classList.remove('open');
+                    });
+                    parentLi.siblings('li').querySelectorAll('ul').forEach(function(ul) {
+                        ul.style.display = 'none';
+                    });
+                }
+            });
         });
-
     }
 
-    //js code for mobile menu 
-    $(".menu-toggle").on("click", function() {
-        $(this).toggleClass("is-active");
+    // Mobile menu toggle
+    document.querySelector('.menu-toggle').addEventListener('click', function() {
+        this.classList.toggle('is-active');
     });
+});
 
-    //jQuery for page scrolling feature - requires jQuery Easing plugin
-
-    $("ul.menu").each(function(i, liList) {
-        var $liList = $(liList);
-
-        $liList.on("click", "li a.scroll-smoth", function(event) {
-            var $anchor = $(this);
-            $("html, body").stop().animate({
-                scrollTop: $($anchor.attr("href")).offset().top - 70
-            }, 1500, "easeInOutExpo");
-            event.preventDefault();
+// Smooth scrolling for anchor links
+document.querySelectorAll('ul.menu a.scroll-smooth').forEach(function(link) {
+    link.addEventListener('click', function(event) {
+        event.preventDefault();
+        var target = document.querySelector(this.getAttribute('href'));
+        var topOffset = 70; // Adjust this value based on your fixed header height or other offsets
+        window.scrollTo({
+            top: target.offsetTop - topOffset,
+            behavior: 'smooth'
         });
     });
-
-    //menu options custom affix
-    var fixed_top = $(".header-section");
-    $(window).on("scroll", function() {
-
-        if ($(this).scrollTop() > 50) {
-            fixed_top.addClass("animated fadeInDown menu-fixed");
-        } else {
-            fixed_top.removeClass("animated fadeInDown menu-fixed");
-        }
+});
+document.addEventListener('DOMContentLoaded', function() {
+    var grid = document.querySelector('.grid');
+    var iso = new Isotope(grid, {
+        itemSelector: '.filter-item',
+        layoutMode: 'fitRows'
     });
+});
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.progress-circle').forEach(function(pc) {
+        var val = parseInt(pc.dataset.progress);
+        var r = pc.getAttribute('r');
+        var c = Math.PI * (r * 2);
 
+        // Set the stroke length
+        if (val < 0) { val = 0; }
+        if (val > 100) { val = 100; }
+        var pct = ((100 - val) / 100) * c;
 
-    $(window).on("load", function() {
-
-        // isotope
-        $(".grid").isotope({
-            // options
-            itemSelector: ".filter-item"
-        });
-        var $gallery = $(".grid").isotope({
-            // options
-        });
-
-        // filter items on button click
-        $(".portfolio-item-button").on("click", "span", function() {
-            var filterValue = $(this).attr("data-filter");
-            $gallery.isotope({
-                filter: filterValue
-            });
-
-        });
-
-        $(".portfolio-item-button").on("click", "span", function() {
-            $(this).addClass("active").siblings().removeClass("active");
-        });
+        pc.style.strokeDasharray = c;
+        pc.style.strokeDashoffset = pct;
     });
-
-    $("a[data-rel^=lightcase]").lightcase();
-
-    // skill circle progress bar
-    var skillLevel1 = $(".skill-item .first").data("skill-level");
-    var skillLevel2 = $(".skill-item .second").data("skill-level");
-    var skillLevel3 = $(".skill-item .third").data("skill-level");
-    var skillLevel4 = $(".skill-item .fourth").data("skill-level");
-    //first.circle
-    $(".first.circle").circleProgress({
-        value: "0." + skillLevel1,
-        size: 110,
-        emptyFill: "transparent",
-        fill: {
-            color: "#39b54a"
-        }
-    }).on("circle-animation-progress", function(event, progress) {
-        $(this).find("strong").html(Math.round(95 * progress) + "<span>%</span>");
+});
+window.addEventListener('scroll', function() {
+    var header = document.querySelector('.header-section');
+    var scrollDistance = window.scrollY;
+    if (scrollDistance > 50) {
+        header.classList.add('menu-fixed', 'animated', 'fadeInDown');
+    } else {
+        header.classList.remove('menu-fixed', 'animated', 'fadeInDown');
+    }
+});
+// Vanilla JS equivalent of jQuery's isotope initialization
+document.addEventListener('DOMContentLoaded', function() {
+    var grid = document.querySelector('.grid');
+    var iso = new Isotope(grid, {
+        itemSelector: '.filter-item',
+        layoutMode: 'fitRows'
     });
+});
 
-    //second.circle
-    $(".second.circle").circleProgress({
-        value: "0." + skillLevel2,
-        size: 110,
-        emptyFill: "transparent",
-        fill: {
-            color: "#f26522"
-        }
-    }).on("circle-animation-progress", function(event, progress) {
-        $(this).find("strong").html(Math.round(skillLevel2 * progress) + "<i>%</i>");
+// Vanilla JS for initializing circle progress bars
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.progress-circle').forEach(function(pc) {
+        var val = parseInt(pc.dataset.progress);
+        var r = pc.getAttribute('r');
+        var c = Math.PI * (r * 2);
+
+        // Set the stroke length
+        if (val < 0) { val = 0; }
+        if (val > 100) { val = 100; }
+        var pct = ((100 - val) / 100) * c;
+
+        pc.style.strokeDasharray = c;
+        pc.style.strokeDashoffset = pct;
     });
+});
 
-    //third.circle
-    $(".third.circle").circleProgress({
-        value: "0." + skillLevel3,
-        size: 110,
-        emptyFill: "transparent",
-        fill: {
-            color: "#6e41ff"
-        }
-    }).on("circle-animation-progress", function(event, progress) {
-        $(this).find("strong").html(Math.round(70 * progress) + "<span>%</span>");
-    });
+// Vanilla JS for affixing the menu on scroll
+window.addEventListener('scroll', function() {
+    var header = document.querySelector('.header-section');
+    var scrollDistance = window.scrollY;
+    if (scrollDistance > 50) {
+        header.classList.add('menu-fixed', 'animated', 'fadeInDown');
+    } else {
+        header.classList.remove('menu-fixed', 'animated', 'fadeInDown');
+    }
+});
 
-    //fourth.circle
-    $(".fourth.circle").circleProgress({
-        value: "0." + skillLevel4,
-        size: 110,
-        emptyFill: "transparent",
-        fill: {
-            color: "#ec008c"
-        }
-    }).on("circle-animation-progress", function(event, progress) {
-        $(this).find("strong").html(Math.round(90 * progress) + "<span>%</span>");
-    });
-
-    // progress bar
-    $(".progressbar").each(function() {
-        $(this).find(".bar").animate({
-            "width": $(this).attr("data-perc")
-        }, 3000);
-        $(this).find(".label").animate({
-            "left": $(this).attr("data-perc")
-        }, 3000);
-    });
-
-    //portfolio-slider
-    var swiper = new Swiper(".portfolio-slider", {
-        slidesPerView: 2,
-        slidesPerColumn: 2,
-        spaceBetween: 20,
-        pagination: {
-            el: ".swiper-pagination",
-            clickable: true,
-        },
-    });
-
-    // testimonial slider
-    var swiper = new Swiper(".testimonial-slider", {
-        effect: "coverflow",
-        loop: 0,
-        slidesPerView: "auto",
-        grabCursor: 1,
-        parallax: 0,
-        centeredSlides: true,
-        coverflowEffect: {
-            rotate: 0,
-            stretch: 80,
-            depth: 200,
-            modifier: 1,
-            slideShadows: !1
-        },
-        pagination: {
-            el: ".swiper-pagination",
-            dynamicBullets: true,
-        },
-        navigation: {
-            nextEl: ".button-next",
-            prevEl: ".button-prev",
-        },
-    });
-
-    // blog slider
-    var swiper = new Swiper(".blog-slider", {
-        slidesPerView: 2,
-        spaceBetween: 0,
-        pagination: {
-            el: ".swiper-pagination",
-            clickable: true,
-        },
-        breakpoints: {
-            1920: {
-                slidesPerView: 2,
-                spaceBetween: 0,
-            },
-            1440: {
-                slidesPerView: 1,
-                spaceBetween: 0,
-            },
-            1199: {
-                slidesPerView: 2,
-                spaceBetween: 0,
-            },
-            575: {
-                slidesPerView: 1,
-                spaceBetween: 0,
-            }
-        }
-    });
-
-    // blog slider for home-page-two
-    var swiper = new Swiper(".blog-slider-two", {
+// Vanilla JS for initializing Swiper sliders
+document.addEventListener('DOMContentLoaded', function() {
+    new Swiper('.swiper-container', {
         slidesPerView: 3,
-        spaceBetween: 0,
+        spaceBetween: 30,
         pagination: {
-            el: ".swiper-pagination",
+            el: '.swiper-pagination',
             clickable: true,
         },
         breakpoints: {
             991: {
                 slidesPerView: 2,
-                spaceBetween: 0,
+                spaceBetween: 20,
             },
             575: {
                 slidesPerView: 1,
-                spaceBetween: 0,
+                spaceBetween: 10,
             }
         }
     });
+});
 
-    // post-img-slider
-    var swiper = new Swiper(".post-img-slider", {
-        slidesPerView: 1,
-        spaceBetween: 0,
-        navigation: {
-            nextEl: ".swiper-button-next",
-            prevEl: ".swiper-button-prev",
-        },
-        autoplay: {
-            delay: 1000,
-        },
-    });
-
-    // more-case-slider
-    var swiper = new Swiper(".more-case-slider", {
-        pagination: {
-            el: ".swiper-pagination",
-        },
-    });
-
-    // test-slider
-    var swiper = new Swiper(".testi-slider", {
-        slidesPerView: 1,
-        spaceBetween: 0,
-    });
-
-    $(".work-smaple-main").slick({
-        slidesToShow: 1,
-        slidesToScroll: 1,
-        arrows: false,
-        fade: true,
-        asNavFor: ".work-smaple-nav"
-    });
-    $(".work-smaple-nav").slick({
-        slidesToShow: 4,
-        slidesToScroll: 1,
-        asNavFor: ".work-smaple-main",
-        dots: true,
-        centerMode: true,
-        focusOnSelect: true,
-        prevArrow: $(".prev"),
-        nextArrow: $(".next"),
-    });
-
-    // Show or hide the sticky footer button
-    $(window).on("scroll", function() {
-        if ($(this).scrollTop() > 200) {
-            $(".scroll-to-top").fadeIn(200);
-        } else {
-            $(".scroll-to-top").fadeOut(200);
-        }
-    });
-
-    // Animate the scroll to top
-    $(".scroll-to-top").on("click", function(event) {
-        event.preventDefault();
-        $("html, body").animate({
-            scrollTop: 0
-        }, 300);
-    });
-
-})(jQuery);
+// Vanilla JS for scroll to top functionality
+var scrollTopButton = document.querySelector('.scroll-to-top');
+window.addEventListener('scroll', function() {
+    if (window.scrollY > 200) {
+        scrollTopButton.style.display = 'block';
+    } else {
+        scrollTopButton.style.display = 'none';
+    }
+});
+scrollTopButton.addEventListener('click', function() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+});
